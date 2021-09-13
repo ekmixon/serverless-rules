@@ -163,3 +163,5 @@ dmypy.json
 .prof
 
 # End of https://www.toptal.com/developers/gitignore/api/python,go
+tflint-ruleset-aws-serverless/tflint-ruleset-aws-serverless
+tflint-ruleset-aws-serverless/tests/.tflint.d
