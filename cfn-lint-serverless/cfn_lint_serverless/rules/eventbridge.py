@@ -29,7 +29,7 @@ class EventBridgeDLQRule(CloudFormationLintRule):
         for key, value in cfn.get_resources(["AWS::Events::Rule"]).items():
             targets = value.get("Properties", {}).get("Targets", [])
 
-            if not all(["Arn" in t.get("DeadLetterConfig", {}) for t in targets]):
+            if any("Arn" not in t.get("DeadLetterConfig", {}) for t in targets):
                 matches.append(RuleMatch(["Resources", key], self._message.format(key)))
 
         return matches

@@ -24,10 +24,7 @@ class Value:
         If the 'value' passed is None, this will return None instead of a class object
         """
 
-        if value is None:
-            return None
-
-        return super(Value, cls).__new__(cls)
+        return None if value is None else super(Value, cls).__new__(cls)
 
     def __init__(self, value: Union[dict, str]):
         """

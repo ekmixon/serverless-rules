@@ -104,13 +104,11 @@ class LambdaPermissionPrincipalsRule(CloudFormationLintRule):
         Match against Lambda functions with multiple Principal for Permissions
         """
 
-        matches = []
-
-        for key, value in self._get_permissions(cfn).items():
-            if len(set(value)) > 1:
-                matches.append(RuleMatch(["Resources", key], self._message.format(key)))
-
-        return matches
+        return [
+            RuleMatch(["Resources", key], self._message.format(key))
+            for key, value in self._get_permissions(cfn).items()
+            if len(set(value)) > 1
+        ]
 
 
 class LambdaStarPermissionRule(CloudFormationLintRule):
@@ -178,7 +176,9 @@ class LambdaStarPermissionRule(CloudFormationLintRule):
             principals = self._get_principals(value.get("Properties", {}))
             actions = self._get_actions(value.get("Properties", {}))
 
-            if "lambda.amazonaws.com" in principals and any([a == "*" or ":*" in a for a in actions]):
+            if "lambda.amazonaws.com" in principals and any(
+                a == "*" or ":*" in a for a in actions
+            ):
                 matches.append(RuleMatch(["Resources", key], self._message.format(key)))
 
         return matches
@@ -360,8 +360,6 @@ class LambdaAsyncNoDestinationRule(CloudFormationLintRule):
         Match against Lambda functions without an explicity Timeout
         """
 
-        matches = []
-
         permissions = cfn.get_resources(["AWS::Lambda::Permission"])
         event_invoke_configs = cfn.get_resources(["AWS::Lambda::EventInvokeConfig"])
 
@@ -378,8 +376,8 @@ class LambdaAsyncNoDestinationRule(CloudFormationLintRule):
             if function_name in async_functions.values() and on_failure_destination is not None:
                 found.append(function_name)
 
-        for key, value in async_functions.items():
-            if value not in found:
-                matches.append(RuleMatch(["Resources", key], self._message.format(key)))
-
-        return matches
+        return [
+            RuleMatch(["Resources", key], self._message.format(key))
+            for key, value in async_functions.items()
+            if value not in found
+        ]
